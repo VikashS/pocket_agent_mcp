@@ -1,7 +1,7 @@
 [project]
 name = "pocket-agent-mcp"
-version = "0.1.1"
-description = "MCP based Pocket Agent in vertor db as storage"
+version = "0.1.2"
+description = "MCP based Pocket Agent in vector db ( chroma) as storage"
 readme = "README.md"
 authors = [
     {name = "Vikash Singh", email = "vikash.singh@linuxmail.org"},
@@ -55,8 +55,7 @@ packages = ["src/pocket_agent_mcp"]
 
 
 # ============================================================================
-# CUSTOM: MCP Server Entry Point
-# Add this section to make the package executable as a command
+# MCP Server Entry Point
 # ============================================================================
 [project.scripts]
 pocket-agent-mcp-server = "pocket_agent_mcp.server:main"

@@ -24,10 +24,8 @@ FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
 # Multi-server MCP client configuration
 current_dir = os.path.dirname(os.path.abspath(__file__))
 mcp_config_path = os.path.join(current_dir, "mcp.json")
-mcp_json = json.load(open(mcp_config_path, 'r'))
-mcp_json["firecrawl_server"]["env"] = {
-    "FIRECRAWL_API_KEY": FIRECRAWL_API_KEY
-}
+mcp_json = json.load(open(mcp_config_path, "r"))
+mcp_json["firecrawl_server"]["env"] = {"FIRECRAWL_API_KEY": FIRECRAWL_API_KEY}
 
 client = MultiServerMCPClient(mcp_json)
 
@@ -43,7 +41,7 @@ async def create_research_agent():
     llm_with_tools = llm.bind_tools(tools)
 
     # System prompt for research assistant
-    system_message = """You are an advanced research assistant with access to web crawling and knowledge storage capabilities.
+    system_message = """You are an advanced Pocket assistant with access to web crawling and knowledge storage capabilities.
 
                         Your abilities:
                         1. **Web Research**: Use Firecrawl tools to scrape and analyze web content
@@ -61,10 +59,7 @@ async def create_research_agent():
                         - Regular conversation for research questions
                         - The system will automatically use the best tools for your requests"""
 
-    prompt_template = ChatPromptTemplate.from_messages([
-        ("system", system_message),
-        MessagesPlaceholder("messages")
-    ])
+    prompt_template = ChatPromptTemplate.from_messages([("system", system_message), MessagesPlaceholder("messages")])
 
     chat_llm = prompt_template | llm_with_tools
 
@@ -83,11 +78,7 @@ async def create_research_agent():
     graph_builder.add_node("tool_node", ToolNode(tools=tools))
 
     graph_builder.add_edge(START, "chat_node")
-    graph_builder.add_conditional_edges(
-        "chat_node",
-        tools_condition,
-        {"tools": "tool_node", "__end__": END}
-    )
+    graph_builder.add_conditional_edges("chat_node", tools_condition, {"tools": "tool_node", "__end__": END})
     graph_builder.add_edge("tool_node", "chat_node")
 
     return graph_builder.compile(checkpointer=MemorySaver()), tools
@@ -96,7 +87,7 @@ async def create_research_agent():
 async def main():
     """Main function to run the research assistant."""
 
-    print("🔬 Research Assistant with Firecrawl & RAG")
+    print("🔬 Pocket Assistant with Firecrawl & RAG")
     print("=" * 50)
 
     config = {"configurable": {"thread_id": "research_session"}}
@@ -125,7 +116,7 @@ async def main():
             try:
                 user_input = input("🤔 You: ").strip()
 
-                if user_input.lower() in ['quit', 'exit', 'bye']:
+                if user_input.lower() in ["quit", "exit", "bye"]:
                     print("👋 Goodbye! Happy researching!")
                     break
 
@@ -135,10 +126,7 @@ async def main():
                 print("🤖 Assistant (Please wait...): ", end="", flush=True)
 
                 # Get response from agent
-                response = await agent.ainvoke(
-                    {"messages": [{"role": "user", "content": user_input}]},
-                    config=config
-                )
+                response = await agent.ainvoke({"messages": [{"role": "user", "content": user_input}]}, config=config)
 
                 # Print the response
                 assistant_message = response["messages"][-1].content

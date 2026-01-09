@@ -1,4 +1,4 @@
-# server.py - Research Assistant MCP Server with ChromaDB
+# server.py - Pocket Assistant MCP Server with ChromaDB
 # uv add chromadb langchain-chroma langchain-ollama
 
 from mcp.server.fastmcp import FastMCP
@@ -28,15 +28,12 @@ EMBED_MODEL = "nomic-embed-text"
 OLLAMA_BASE_URL = "http://localhost:11434"
 
 # Initialize embeddings once
-embeddings = OllamaEmbeddings(
-    model=EMBED_MODEL,
-    base_url=OLLAMA_BASE_URL
-)
+embeddings = OllamaEmbeddings(model=EMBED_MODEL, base_url=OLLAMA_BASE_URL)
 
 
 def get_content_hash(content: str) -> str:
     """Generate a hash for content to check for duplicates."""
-    return hashlib.md5(content.encode('utf-8')).hexdigest()
+    return hashlib.md5(content.encode("utf-8")).hexdigest()
 
 
 def load_content_hashes(topic_path: Path) -> Set[str]:
@@ -44,7 +41,7 @@ def load_content_hashes(topic_path: Path) -> Set[str]:
     metadata_file = topic_path / "content_hashes.json"
     if metadata_file.exists():
         try:
-            with open(metadata_file, 'r') as f:
+            with open(metadata_file, "r") as f:
                 return set(json.load(f))
         except:
             return set()
@@ -54,23 +51,20 @@ def load_content_hashes(topic_path: Path) -> Set[str]:
 def save_content_hashes(topic_path: Path, hashes: Set[str]):
     """Save content hashes to metadata file."""
     metadata_file = topic_path / "content_hashes.json"
-    with open(metadata_file, 'w') as f:
+    with open(metadata_file, "w") as f:
         json.dump(list(hashes), f)
 
 
 def get_vectorstore(topic: str) -> Chroma:
-    """Get or create a ChromaDB vectorstore for a topic."""
+    """Get or create a ChromaDB vector store for a topic."""
     topic_path = CHROMA_DB_ROOT / topic
     topic_path.mkdir(parents=True, exist_ok=True)
 
-    return Chroma(
-        persist_directory=str(topic_path),
-        embedding_function=embeddings,
-        collection_name=f"research_{topic}"
-    )
+    return Chroma(persist_directory=str(topic_path), embedding_function=embeddings, collection_name=f"research_{topic}")
 
 
 # === Tools ===
+
 
 @mcp.tool()
 def save_research_data(content: List[str], topic: str = "default") -> str:
@@ -81,7 +75,7 @@ def save_research_data(content: List[str], topic: str = "default") -> str:
         topic: Topic name for organizing the data (creates separate DB)
     """
     try:
-        topic =topic.replace(' ','_')
+        topic = topic.replace(" ", "_")
         topic_path = CHROMA_DB_ROOT / topic
         topic_path.mkdir(parents=True, exist_ok=True)
 
@@ -111,11 +105,7 @@ def save_research_data(content: List[str], topic: str = "default") -> str:
             content_hash = get_content_hash(text)
             doc = Document(
                 page_content=text,
-                metadata={
-                    "topic": topic,
-                    "content_hash": content_hash,
-                    "doc_index": len(existing_hashes) + i
-                }
+                metadata={"topic": topic, "content_hash": content_hash, "doc_index": len(existing_hashes) + i},
             )
             documents.append(doc)
             doc_ids.append(f"{topic}_{content_hash}")
