@@ -1,6 +1,6 @@
 [project]
 name = "pocket-agent-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "MCP based Pocket Agent in vertor db as storage"
 readme = "README.md"
 authors = [
